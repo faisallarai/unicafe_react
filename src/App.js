@@ -11,7 +11,7 @@ const Statistics = ({text, value}) => {
   )
 }
 const StatisticsTable = (props) => {
-  const {good, neutral, bad, total, avg, pos} = props
+  const {good, neutral, bad, total, average, positive} = props
 
   if(good === 0 && neutral === 0 && bad === 0){
     return(
@@ -35,10 +35,10 @@ const StatisticsTable = (props) => {
           <td><Statistics text="all" value={total} /></td>
         </tr>
         <tr>
-          <td><Statistics text="avg" value={avg} /></td>
+          <td><Statistics text="avg" value={average} /></td>
         </tr>
         <tr>
-          <td><Statistics text="positive" value={pos} /></td>
+          <td><Statistics text="positive" value={positive} /></td>
         </tr>
       </tbody>
       
@@ -53,37 +53,52 @@ const App = () => {
   const [bad, setBad] = useState(0)
   const [total, setTotal] = useState(0)
 
-  const handleGoodCount = () => {
-    setTotal(total + 1)
+  const calculateGood = () => {
     setGood(good + 1)
   }
 
+  const calculateTotal = () => {
+    setTotal(total + 1)
+  }
+
+  const handleGoodCount = () => {
+    calculateGood()    
+    calculateTotal()
+    calculateAverage()
+    calculatePositive()
+  }
+
   const handleNeutralcount = () => {
-    setTotal(total + 1 )
     setNeutral(neutral + 1)
+    calculateTotal()
+    calculateAverage()
   }
 
   const handleBadCount = () => {
-    setTotal(total + 1)
     setBad(bad + 1)
+    calculateTotal()
+    calculateAverage()
   }
 
-  let pos = 0
-  if(good !== 0 && total !== 0) {
-    pos = (good/total) * 100
-    pos = pos.toString() + '%'
-    console.log(pos)
+  const calculatePositive = () => {
+    console.log(good, total)
+    if(good !== 0 && total !== 0) {
+      let newpositive = ((good/total) * 100).toFixed(2)
+      newpositive = newpositive.toString() + '%'
+      return newpositive
+    }
   }
 
-  let avg = 0
-  let sum = 0
-  let good_score = 1
-  let neutral_score = 0
-  let bad_score = -1
+  const calculateAverage = () => {
 
-  sum = (good_score * good) + (neutral_score * neutral) +  (bad_score * bad)
-  if(total !== 0){
-    avg = sum/total
+    let good_score = 1
+    let neutral_score = 0
+    let bad_score = -1
+
+    let sum = (good_score * good) + (neutral_score * neutral) +  (bad_score * bad)
+    if(total !== 0){
+      return (sum/total).toFixed(2)
+    }
   }
 
   const props = {
@@ -91,8 +106,8 @@ const App = () => {
     neutral,
     bad,
     total,
-    avg,
-    pos
+    average: calculateAverage(),
+    positive: calculatePositive()
   }
   
   return(
